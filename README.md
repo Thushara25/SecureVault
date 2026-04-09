@@ -1,8 +1,17 @@
+<div align="center">
+
 # 🔐 SecureVault
 
-> A hybrid multi-layer encryption system for secure password management and encrypted peer-to-peer messaging.
+### Zero-Knowledge Encrypted Password Manager
 
-**Zero-knowledge architecture** — the server stores only ciphertext. Encryption and decryption happen entirely in your browser.
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+**A hybrid multi-layer encryption system for secure password management and encrypted peer-to-peer messaging. The server stores only ciphertext — encryption and decryption happen entirely in your browser.**
+
+</div>
 
 ---
 
@@ -10,26 +19,66 @@
 
 | Module | Description |
 |--------|-------------|
-| 🔑 Password Vault | Store & retrieve passwords with multi-layer encryption |
-| 📤 Secure Share | Send encrypted messages to other users (RSA + AES) |
-| 📥 Inbox | Decrypt received messages locally in your browser |
-| ⚙️ Settings | Manage your RSA keypair and account |
+| 🔑 **Password Vault** | Store & retrieve passwords with multi-layer encryption (Vigenère → AES-256 → Database) |
+| ✏️ **Edit Entries** | Full CRUD — add, edit, and delete vault entries |
+| 🔍 **Breach Check** | Check passwords against HaveIBeenPwned using k-anonymity (SHA-1 prefix) |
+| ⚡ **Smart Generator** | Generate passwords with customizable length, character sets (A-Z, a-z, 0-9, symbols) |
+| 📤 **Secure Share** | Send encrypted messages to other users using hybrid RSA + AES encryption |
+| 📥 **Inbox** | Decrypt received messages locally; view sent and received messages |
+| 🔒 **Auto-Lock** | Vault auto-locks after 5 minutes of inactivity for security |
+| 📱 **Mobile Responsive** | Collapsible sidebar with hamburger menu for mobile devices |
+| 🏷️ **Categories** | Filter vault entries by category (Social, Work, Finance, etc.) |
 
 ---
 
 ## 🔐 Encryption Architecture
 
 ```
-Layer 1 → Vigenère Cipher        (classical obfuscation)
-Layer 2 → AES-256-CBC            (symmetric bulk encryption)
-Layer 3 → RSA-2048 OAEP          (asymmetric key wrapping for sharing)
-Layer 4 → PBKDF2-SHA256          (key derivation from master password)
+┌──────────────────────────────────────────────────────┐
+│                   ENCRYPTION PIPELINE                │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│  📝 Plaintext                                        │
+│    │                                                 │
+│    ▼                                                 │
+│  Layer 1 → Vigenère Cipher (classical obfuscation)   │
+│    │                                                 │
+│    ▼                                                 │
+│  Layer 2 → AES-256-CBC (symmetric bulk encryption)   │
+│    │         Key derived via PBKDF2-SHA256            │
+│    │         100,000 iterations                      │
+│    ▼                                                 │
+│  💾 Stored in Database (ciphertext only)             │
+│                                                      │
+├──────────────────────────────────────────────────────┤
+│              SECURE SHARING PIPELINE                 │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│  📝 Message                                          │
+│    │                                                 │
+│    ▼                                                 │
+│  AES-256-CBC → Encrypt message (random key)          │
+│    │                                                 │
+│    ▼                                                 │
+│  RSA-2048 OAEP → Wrap AES key with recipient's      │
+│                   public key                         │
+│    │                                                 │
+│    ▼                                                 │
+│  📤 Send encrypted payload                           │
+│                                                      │
+└──────────────────────────────────────────────────────┘
 ```
 
-- Master password is **never** sent to the server
-- Private RSA key is **encrypted** with your master password and stored in `localStorage`
-- Only your **public key** is stored on the server
-- Server stores **only ciphertext** — zero knowledge
+### Zero-Knowledge Guarantees
+
+| Property | Implementation |
+|----------|----------------|
+| **Zero-knowledge** | Server stores only ciphertext — cannot read your data |
+| **Private key** | Encrypted with master password, stored in `localStorage` |
+| **Master password** | Only in memory during session, never sent to server |
+| **Clipboard** | Auto-clears after 30 seconds |
+| **Auto-lock** | Vault locks after 5 min inactivity |
+| **Row Level Security** | Supabase RLS enforces per-user data isolation |
 
 ---
 
@@ -37,46 +86,65 @@ Layer 4 → PBKDF2-SHA256          (key derivation from master password)
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18 + Vite |
-| Styling | CSS-in-JS (inline styles) |
-| Backend | Supabase (Auth + PostgreSQL) |
-| Crypto | Web Crypto API (built into browser) |
-| Auth | Supabase JWT |
+| Frontend | React 19 + Vite 8 |
+| Styling | Vanilla CSS (glassmorphism, animations, responsive) |
+| Backend | Supabase (Auth + PostgreSQL + RLS) |
+| Crypto | Web Crypto API (AES-256-CBC, RSA-2048 OAEP, PBKDF2-SHA256) |
+| Breach API | HaveIBeenPwned (k-anonymity SHA-1 prefix model) |
+| Fonts | Inter + Space Mono (Google Fonts) |
 
 ---
 
-## 🚀 How to Run Locally
+## 📁 Project Structure
+
+```
+SecureVault/
+├── src/
+│   ├── lib/
+│   │   ├── supabaseClient.js   ← Supabase client, query builder, config
+│   │   └── crypto.js           ← Vigenère, AES, RSA, PBKDF2, breach check
+│   ├── components/
+│   │   ├── AuthScreen.jsx      ← Login/Signup with animated background
+│   │   ├── VaultModule.jsx     ← Password vault (CRUD, breach, generator)
+│   │   ├── ShareModule.jsx     ← Encrypted message sending
+│   │   ├── InboxModule.jsx     ← Received/Sent messages
+│   │   ├── SettingsModule.jsx  ← Account, keys, architecture info
+│   │   ├── Toast.jsx           ← Toast notifications
+│   │   └── StrengthMeter.jsx   ← Password strength indicator
+│   ├── styles/
+│   │   └── index.css           ← Complete design system
+│   ├── App.jsx                 ← Main shell (sidebar, routing, auto-lock)
+│   └── main.jsx                ← React entry point
+├── index.html
+├── package.json
+├── vite.config.js
+├── README.md
+└── REPORT.md                   ← Full project report & documentation
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org) (v18 or above)
-- [Git](https://git-scm.com)
-- A [Supabase](https://supabase.com) account (free)
+- [Node.js](https://nodejs.org) v18+
+- [Supabase](https://supabase.com) account (free tier)
 
----
-
-### Step 1 — Clone the repo
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/Thushara25/SecureVault.git
 cd SecureVault
-```
-
----
-
-### Step 2 — Install dependencies
-
-```bash
 npm install
 ```
 
----
+### 2. Supabase Setup
 
-### Step 3 — Set up Supabase
-
-1. Go to [supabase.com](https://supabase.com) → create a new project
-2. Go to **SQL Editor** → run this SQL:
+1. Create a project at [supabase.com](https://supabase.com)
+2. Run this SQL in **SQL Editor**:
 
 ```sql
+-- Profiles table
 create table profiles (
   id uuid references auth.users primary key,
   email text unique not null,
@@ -89,6 +157,7 @@ create policy "Users can view all profiles" on profiles for select using (true);
 create policy "Users insert own profile" on profiles for insert with check (auth.uid() = id);
 create policy "Users update own profile" on profiles for update using (auth.uid() = id);
 
+-- Vault entries table
 create table vault_entries (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users not null,
@@ -102,6 +171,7 @@ create table vault_entries (
 alter table vault_entries enable row level security;
 create policy "Users manage own vault" on vault_entries for all using (auth.uid() = user_id);
 
+-- Secure messages table
 create table secure_messages (
   id uuid primary key default gen_random_uuid(),
   sender_id uuid references auth.users not null,
@@ -121,65 +191,34 @@ create policy "Users send messages" on secure_messages
 ```
 
 3. Go to **Authentication → Providers → Email** → disable **"Confirm email"** → Save
+4. Go to **Project Settings → API** → copy **Project URL** and **Anon public key**
 
-4. Go to **Project Settings → API** and copy your **Project URL** and **Anon public key**
+### 3. Add Your Keys
 
----
-
-### Step 4 — Add your Supabase keys
-
-Open `src/SecureVault.jsx` and replace lines 58–59:
+Open `src/lib/supabaseClient.js` and replace:
 
 ```js
 const SUPABASE_URL = "https://your-project.supabase.co";
 const SUPABASE_ANON_KEY = "your-anon-key";
 ```
 
----
-
-### Step 5 — Start the app
+### 4. Run
 
 ```bash
 npm run dev
 ```
 
-Open your browser at **http://localhost:5173**
+Open **http://localhost:5173** in your browser.
 
 ---
 
-## 👥 Adding Teammates as Collaborators
+## 🔒 How It Works
 
-1. Go to your repo on GitHub → **Settings → Collaborators**
-2. Click **"Add people"**
-3. Enter their GitHub username or email
-4. They accept the invite → they can clone and push
-
----
-
-## 📁 Project Structure
-
-```
-SecureVault/
-├── src/
-│   ├── SecureVault.jsx   ← entire app (auth, vault, share, inbox)
-│   └── main.jsx          ← entry point
-├── index.html
-├── vite.config.js
-├── package.json
-└── README.md
-```
-
----
-
-## 🔒 Security Notes
-
-| Property | Implementation |
-|----------|---------------|
-| Zero-knowledge | Server stores only ciphertext |
-| Private key | Encrypted in localStorage, never sent raw |
-| Master password | Only in memory during session, never persisted |
-| Clipboard | Auto-clears after 30 seconds |
-| Row Level Security | Supabase RLS enforces per-user data isolation |
+1. **Sign Up** → RSA-2048 keypair generated in browser → public key stored on server, private key encrypted with your master password & stored in `localStorage`
+2. **Add Password** → Plaintext → Vigenère cipher → AES-256-CBC encryption → stored as ciphertext in database
+3. **View Password** → Ciphertext fetched → AES-256-CBC decryption → Vigenère decryption → displayed briefly, then auto-cleared
+4. **Share Message** → Message encrypted with random AES key → AES key wrapped with recipient's RSA public key → sent to database
+5. **Receive Message** → RSA decrypt the AES key using your private key → AES decrypt the message → displayed locally
 
 ---
 
