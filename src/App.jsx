@@ -9,6 +9,7 @@ import VaultModule from "./components/VaultModule";
 import ShareModule from "./components/ShareModule";
 import InboxModule from "./components/InboxModule";
 import SettingsModule from "./components/SettingsModule";
+import { Key, Send, Inbox, Settings, ShieldLock, Lock, Unlock, Menu, ArrowRight } from "./components/Icons";
 
 const AUTO_LOCK_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -97,10 +98,10 @@ export default function App() {
   };
 
   const nav = [
-    { id: "vault", icon: "🔑", label: "Password Vault" },
-    { id: "share", icon: "📤", label: "Secure Share" },
-    { id: "inbox", icon: "📥", label: "Inbox" },
-    { id: "settings", icon: "⚙", label: "Settings" },
+    { id: "vault", Icon: Key, label: "Password Vault" },
+    { id: "share", Icon: Send, label: "Secure Share" },
+    { id: "inbox", Icon: Inbox, label: "Inbox" },
+    { id: "settings", Icon: Settings, label: "Settings" },
   ];
 
   const pageTitles = {
@@ -116,7 +117,9 @@ export default function App() {
       <>
         <div className="lock-overlay">
           <div className="lock-card" style={{ width: "100%", maxWidth: 380, padding: 20 }}>
-            <div className="lock-icon">🔒</div>
+            <div className="lock-icon" style={{ display: "flex", justifyContent: "center" }}>
+              <Lock size={48} style={{ color: "var(--accent)" }} />
+            </div>
             <div className="auth-title" style={{ fontSize: 20, marginBottom: 8 }}>Vault Locked</div>
             <div className="auth-subtitle" style={{ marginBottom: 24 }}>Session timed out for security</div>
             <div className="auth-glass">
@@ -132,9 +135,9 @@ export default function App() {
                   autoFocus
                 />
               </div>
-              {masterPwdErr && <div className="text-danger mb-12">⚠ {masterPwdErr}</div>}
+              {masterPwdErr && <div className="text-danger mb-12">{masterPwdErr}</div>}
               <button className="btn btn-primary w-full" onClick={unlockVault}>
-                Unlock Vault
+                <Unlock size={15} /> Unlock Vault
               </button>
             </div>
           </div>
@@ -160,7 +163,9 @@ export default function App() {
             <div className="auth-card-wrapper">
               <div className="auth-glass">
                 <div style={{ textAlign: "center", marginBottom: 24 }}>
-                  <div style={{ fontSize: 40, marginBottom: 8 }}>🔐</div>
+                  <div style={{ marginBottom: 12, display: "flex", justifyContent: "center" }}>
+                    <ShieldLock size={40} style={{ color: "var(--accent)" }} />
+                  </div>
                   <div className="auth-title" style={{ fontSize: 20 }}>Enter Master Password</div>
                   <div className="auth-subtitle">Decrypt your vault locally</div>
                 </div>
@@ -175,9 +180,9 @@ export default function App() {
                     autoFocus
                   />
                 </div>
-                {masterPwdErr && <div className="text-danger mb-12">⚠ {masterPwdErr}</div>}
+                {masterPwdErr && <div className="text-danger mb-12">{masterPwdErr}</div>}
                 <button className="btn btn-primary w-full" onClick={confirmMasterPwd}>
-                  Unlock Vault →
+                  Unlock Vault <ArrowRight size={14} />
                 </button>
               </div>
             </div>
@@ -205,7 +210,9 @@ export default function App() {
         <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
           <div className="sidebar-header">
             <div className="sidebar-brand">
-              <div className="sidebar-logo-box">🔐</div>
+              <div className="sidebar-logo-box">
+                <ShieldLock size={18} style={{ color: "#fff" }} />
+              </div>
               <div>
                 <div className="sidebar-brand-text">SECUREVAULT</div>
                 <div className="sidebar-brand-sub">zero-knowledge</div>
@@ -220,7 +227,7 @@ export default function App() {
                 className={`nav-item ${activeTab === item.id ? "active" : ""}`}
                 onClick={() => { setActiveTab(item.id); setSidebarOpen(false); }}
               >
-                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-icon" style={{ display: "flex" }}><item.Icon size={17} /></span>
                 <span className="nav-label">{item.label}</span>
               </div>
             ))}
@@ -237,14 +244,16 @@ export default function App() {
         <main className="main">
           <div className="top-bar">
             <div className="flex items-center gap-12">
-              <button className="mobile-menu-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+              <button className="mobile-menu-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                <Menu size={18} />
+              </button>
               <div>
                 <div className="page-title">{pageTitles[activeTab]?.title}</div>
                 <div className="page-sub">{pageTitles[activeTab]?.sub}</div>
               </div>
             </div>
             <div className="flex gap-8 items-center">
-              <span className="badge badge-green badge-glow">🔒 Vault Unlocked</span>
+              <span className="badge badge-green badge-glow"><Unlock size={11} /> Vault Unlocked</span>
             </div>
           </div>
 

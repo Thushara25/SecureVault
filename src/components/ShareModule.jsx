@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { aesEncryptRaw, rsaEncrypt } from "../lib/crypto";
+import { FileText, Shield, ShieldLock, Send, User, CheckCircle, ArrowRight } from "./Icons";
 
 export default function ShareModule({ user, toast }) {
   const [users, setUsers] = useState([]);
@@ -44,13 +45,13 @@ export default function ShareModule({ user, toast }) {
       {/* Encryption Info */}
       <div className="card card-accent mb-20">
         <div className="pipeline">
-          <div className="pipeline-step"><span className="pipeline-icon">📝</span> Message</div>
+          <div className="pipeline-step"><FileText size={14} /> Message</div>
           <span className="pipeline-arrow">→</span>
-          <div className="pipeline-step"><span className="pipeline-icon">🛡</span> AES-256</div>
+          <div className="pipeline-step"><Shield size={14} /> AES-256</div>
           <span className="pipeline-arrow">→</span>
-          <div className="pipeline-step"><span className="pipeline-icon">🔐</span> RSA Wrap</div>
+          <div className="pipeline-step"><ShieldLock size={14} /> RSA Wrap</div>
           <span className="pipeline-arrow">→</span>
-          <div className="pipeline-step"><span className="pipeline-icon">📤</span> Send</div>
+          <div className="pipeline-step"><Send size={14} /> Send</div>
         </div>
         <div style={{ fontSize: 11, color: "var(--text4)", fontFamily: "var(--mono)", textAlign: "center", marginTop: 8 }}>
           Only the recipient can decrypt with their private RSA key
@@ -61,7 +62,7 @@ export default function ShareModule({ user, toast }) {
       <div className="form-group">
         <label className="label">Recipient</label>
         <div className="search-bar">
-          <span className="search-icon">👤</span>
+          <span className="search-icon" style={{ display: "flex" }}><User size={15} /></span>
           <input
             className="input"
             placeholder="Search users by email…"
@@ -90,7 +91,7 @@ export default function ShareModule({ user, toast }) {
               >
                 <span>{u.email}</span>
                 {u.public_key
-                  ? <span className="badge badge-green">✓ key</span>
+                  ? <span className="badge badge-green"><CheckCircle size={10} /> key</span>
                   : <span className="badge badge-red">no key</span>
                 }
               </div>
@@ -99,7 +100,7 @@ export default function ShareModule({ user, toast }) {
         )}
         {recipient && (
           <div className="mt-8 flex items-center gap-8">
-            <span className="badge badge-green badge-glow">✓ {recipient.email}</span>
+            <span className="badge badge-green badge-glow"><CheckCircle size={10} /> {recipient.email}</span>
             <button className="btn btn-ghost btn-sm" onClick={() => { setRecipient(null); setRecipientSearch(""); }}>Change</button>
           </div>
         )}
@@ -123,7 +124,7 @@ export default function ShareModule({ user, toast }) {
       </div>
 
       <button className="btn btn-primary" onClick={sendSecure} disabled={sending || !recipient || !message}>
-        {sending ? <><span className="spin" /> Encrypting & Sending…</> : "🔐 Send Encrypted Message"}
+        {sending ? <><span className="spin" /> Encrypting & Sending…</> : <><ShieldLock size={15} /> Send Encrypted Message</>}
       </button>
     </div>
   );

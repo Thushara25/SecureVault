@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { rsaDecrypt, aesDecryptRaw } from "../lib/crypto";
+import { Inbox as InboxIcon, Send, Lock, CheckCircle, Copy } from "./Icons";
 
 export default function InboxModule({ user, toast }) {
   const [messages, setMessages] = useState([]);
@@ -55,19 +56,21 @@ export default function InboxModule({ user, toast }) {
   return (
     <div>
       {/* Tab Toggle */}
-      <div className="tab-group mb-20" style={{ maxWidth: 300 }}>
+      <div className="tab-group mb-20" style={{ maxWidth: 320 }}>
         <button className={`tab-btn ${tab === "received" ? "active" : ""}`} onClick={() => setTab("received")}>
-          📥 Received ({messages.length})
+          <span className="flex items-center gap-6"><InboxIcon size={14} /> Received ({messages.length})</span>
         </button>
         <button className={`tab-btn ${tab === "sent" ? "active" : ""}`} onClick={() => setTab("sent")}>
-          📤 Sent ({sentMessages.length})
+          <span className="flex items-center gap-6"><Send size={14} /> Sent ({sentMessages.length})</span>
         </button>
       </div>
 
       {currentMessages.length === 0 ? (
         <div className="card">
           <div className="empty-state">
-            <div className="empty-icon">{tab === "received" ? "📥" : "📤"}</div>
+            <div className="empty-icon" style={{ display: "flex", justifyContent: "center" }}>
+              {tab === "received" ? <InboxIcon size={48} style={{ color: "var(--text4)" }} /> : <Send size={48} style={{ color: "var(--text4)" }} />}
+            </div>
             <div className="empty-title">No {tab} messages</div>
             <div className="empty-desc">
               {tab === "received"
@@ -96,8 +99,8 @@ export default function InboxModule({ user, toast }) {
                     {tab === "received" ? "RECEIVED" : "SENT"}
                   </span>
                   {decrypted[msg.id]
-                    ? <span className="badge badge-green">✓ Decrypted</span>
-                    : <span className="badge badge-red">🔒 Encrypted</span>
+                    ? <span className="badge badge-green"><CheckCircle size={10} /> Decrypted</span>
+                    : <span className="badge badge-red"><Lock size={10} /> Encrypted</span>
                   }
                   {!decrypted[msg.id] && tab === "received" && (
                     <button className="btn btn-ghost btn-sm" onClick={() => decryptMessage(msg)}>Decrypt</button>
@@ -109,7 +112,7 @@ export default function InboxModule({ user, toast }) {
               </div>
               {decrypted[msg.id] && (
                 <button className="btn btn-ghost btn-sm mt-8" onClick={() => navigator.clipboard.writeText(decrypted[msg.id]).then(() => toast("Copied!", "success"))}>
-                  Copy Text
+                  <Copy size={13} /> Copy Text
                 </button>
               )}
             </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { Download, Copy, LogOut, ShieldLock } from "./Icons";
 
 export default function SettingsModule({ user, onLogout, toast }) {
   const [profile, setProfile] = useState(null);
@@ -44,7 +45,7 @@ export default function SettingsModule({ user, onLogout, toast }) {
             className="btn btn-ghost btn-sm mt-8"
             onClick={() => navigator.clipboard.writeText(profile.public_key).then(() => toast("Public key copied", "success"))}
           >
-            Copy Public Key
+            <Copy size={13} /> Copy Public Key
           </button>
         </div>
       )}
@@ -53,7 +54,7 @@ export default function SettingsModule({ user, onLogout, toast }) {
       <div className="card mb-16">
         <div className="label mb-8">Security</div>
         <div className="flex gap-8" style={{ flexWrap: "wrap" }}>
-          <button className="btn btn-ghost btn-sm" onClick={downloadPrivKey}>⬇ Backup Private Key</button>
+          <button className="btn btn-ghost btn-sm" onClick={downloadPrivKey}><Download size={13} /> Backup Private Key</button>
         </div>
         <div className="text-muted mt-8" style={{ lineHeight: 1.6 }}>
           Your private key is stored encrypted in this browser's localStorage. Back it up to restore access from other devices.
@@ -103,7 +104,7 @@ export default function SettingsModule({ user, onLogout, toast }) {
       <div className="card card-danger">
         <div className="label mb-8" style={{ color: "var(--danger)" }}>Danger Zone</div>
         <button className="btn btn-danger" onClick={async () => { await supabase.signOut(); onLogout(); }}>
-          Sign Out
+          <LogOut size={14} /> Sign Out
         </button>
       </div>
     </div>

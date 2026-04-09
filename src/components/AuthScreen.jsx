@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { generateRSAKeyPair, aesEncrypt, aesDecrypt } from "../lib/crypto";
 import StrengthMeter from "./StrengthMeter";
+import { ShieldLock, Key, Shield, ArrowRight } from "./Icons";
 
 const SUPABASE_URL = "https://syqwkddyqfucltkxhqpx.supabase.co";
 
@@ -64,15 +65,17 @@ export default function AuthScreen({ onLogin }) {
 
       <div className="auth-card-wrapper">
         <div className="auth-logo">
-          <div className="auth-logo-icon">🔐</div>
+          <div className="auth-logo-icon">
+            <ShieldLock size={28} style={{ color: "#fff" }} />
+          </div>
           <div className="auth-title">SecureVault</div>
           <div className="auth-subtitle">Zero-knowledge encrypted vault</div>
         </div>
 
         {!isConfigured && (
           <div className="config-warning">
-            ⚠ Configure Supabase first!{"\n"}
-            Open SecureVault.jsx → replace SUPABASE_URL & SUPABASE_ANON_KEY{"\n"}
+            Configure Supabase first!{"\n"}
+            Open supabaseClient.js → replace SUPABASE_URL & SUPABASE_ANON_KEY{"\n"}
             Then run the SQL in README.
           </div>
         )}
@@ -119,27 +122,27 @@ export default function AuthScreen({ onLogin }) {
             )}
           </div>
 
-          {err && <div className="text-danger mb-12">⚠ {err}</div>}
-          {info && <div style={{ fontSize: 12, color: "var(--accent3)", marginBottom: 12 }}>✓ {info}</div>}
+          {err && <div className="text-danger mb-12">{err}</div>}
+          {info && <div style={{ fontSize: 12, color: "var(--accent3)", marginBottom: 12 }}>{info}</div>}
 
           <button className="btn btn-primary w-full" onClick={handleSubmit} disabled={loading || !isConfigured}>
-            {loading ? <><span className="spin" /> Processing…</> : mode === "login" ? "Log In →" : "Create Account"}
+            {loading ? <><span className="spin" /> Processing…</> : mode === "login" ? <>Log In <ArrowRight size={14} /></> : "Create Account"}
           </button>
 
           {mode === "signup" && (
-            <div className="text-muted mt-16" style={{ textAlign: "center", lineHeight: 1.6 }}>
-              🔒 RSA keypair generated locally. Master password never leaves your device.
+            <div className="text-muted mt-16" style={{ textAlign: "center", lineHeight: 1.6, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <Shield size={14} style={{ color: "var(--accent)" }} /> RSA keypair generated locally. Master password never leaves your device.
             </div>
           )}
 
           {mode === "login" && (
             <div className="mt-16" style={{ textAlign: "center" }}>
               <div className="pipeline">
-                <div className="pipeline-step"><span className="pipeline-icon">🔑</span> Vigenère</div>
+                <div className="pipeline-step"><Key size={14} className="pipeline-icon" /> Vigenère</div>
                 <span className="pipeline-arrow">→</span>
-                <div className="pipeline-step"><span className="pipeline-icon">🛡</span> AES-256</div>
+                <div className="pipeline-step"><Shield size={14} className="pipeline-icon" /> AES-256</div>
                 <span className="pipeline-arrow">→</span>
-                <div className="pipeline-step"><span className="pipeline-icon">🔐</span> RSA-2048</div>
+                <div className="pipeline-step"><ShieldLock size={14} className="pipeline-icon" /> RSA-2048</div>
               </div>
             </div>
           )}

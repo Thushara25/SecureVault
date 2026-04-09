@@ -6,6 +6,11 @@ import {
   generatePassword, getStrength, checkPasswordBreach,
 } from "../lib/crypto";
 import StrengthMeter from "./StrengthMeter";
+import {
+  Search, Plus, Download, Eye, EyeOff, Edit, Trash, Copy,
+  Key, Shield, ShieldLock, Database, FileText, Zap, Lock,
+  AlertTriangle, CheckCircle, ArrowRight, Layers,
+} from "./Icons";
 
 const CATEGORIES = ["All", "Social", "Work", "Finance", "Email", "Dev", "Other"];
 
@@ -120,9 +125,9 @@ export default function VaultModule({ user, masterPassword, toast }) {
     const result = await checkPasswordBreach(decryptedPasswords[entry.id]);
     setBreachResults(b => ({ ...b, [entry.id]: result }));
     if (result.breached) {
-      toast(`⚠ This password was found in ${result.count.toLocaleString()} breaches!`, "error");
+      toast(`This password was found in ${result.count.toLocaleString()} breaches!`, "error");
     } else {
-      toast("✓ Password not found in known breaches", "success");
+      toast("Password not found in known breaches", "success");
     }
   };
 
@@ -156,8 +161,6 @@ export default function VaultModule({ user, masterPassword, toast }) {
 
   const stats = {
     total: entries.length,
-    strong: 0,
-    weak: 0,
   };
 
   return (
@@ -166,27 +169,27 @@ export default function VaultModule({ user, masterPassword, toast }) {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-value">{stats.total}</div>
-          <div className="stat-label">Total</div>
+          <div className="stat-label">Total Entries</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value" style={{ background: "linear-gradient(135deg, var(--accent3), #6ee7b7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>🔒</div>
+          <div className="stat-value" style={{ display: "flex", justifyContent: "center" }}><Lock size={24} style={{ color: "var(--accent3)" }} /></div>
           <div className="stat-label">Encrypted</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value" style={{ background: "linear-gradient(135deg, var(--accent2), var(--accent4))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>2</div>
-          <div className="stat-label">Layers</div>
+          <div className="stat-value" style={{ display: "flex", justifyContent: "center" }}><Layers size={24} style={{ color: "var(--accent2)" }} /></div>
+          <div className="stat-label">2 Layers</div>
         </div>
       </div>
 
       {/* Controls */}
       <div className="flex items-center justify-between mb-16" style={{ flexWrap: "wrap", gap: 10 }}>
         <div className="search-bar" style={{ maxWidth: 280, flex: 1 }}>
-          <span className="search-icon">🔍</span>
+          <span className="search-icon" style={{ display: "flex" }}><Search size={15} /></span>
           <input className="input" placeholder="Search vault…" value={search} onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 40 }} />
         </div>
         <div className="flex gap-8">
-          <button className="btn btn-ghost btn-sm" onClick={exportVault}>⬇ Export</button>
-          <button className="btn btn-primary btn-sm" onClick={() => { resetForm(); setShowAdd(true); }}>+ Add Entry</button>
+          <button className="btn btn-ghost btn-sm" onClick={exportVault}><Download size={14} /> Export</button>
+          <button className="btn btn-primary btn-sm" onClick={() => { resetForm(); setShowAdd(true); }}><Plus size={14} /> Add Entry</button>
         </div>
       </div>
 
@@ -216,10 +219,10 @@ export default function VaultModule({ user, masterPassword, toast }) {
       {!loading && filtered.length === 0 && (
         <div className="card">
           <div className="empty-state">
-            <div className="empty-icon">🔑</div>
+            <div className="empty-icon" style={{ display: "flex", justifyContent: "center" }}><Key size={48} style={{ color: "var(--text4)" }} /></div>
             <div className="empty-title">No entries yet</div>
             <div className="empty-desc">Add your first password to get started</div>
-            <button className="btn btn-primary mt-16" onClick={() => { resetForm(); setShowAdd(true); }}>+ Add First Entry</button>
+            <button className="btn btn-primary mt-16" onClick={() => { resetForm(); setShowAdd(true); }}><Plus size={14} /> Add First Entry</button>
           </div>
         </div>
       )}
@@ -235,18 +238,18 @@ export default function VaultModule({ user, masterPassword, toast }) {
                   {entry.site}
                   {breachResults[entry.id] && breachResults[entry.id] !== "checking" && (
                     breachResults[entry.id].breached
-                      ? <span className="badge badge-red" style={{ fontSize: 9 }}>⚠ BREACH</span>
-                      : <span className="badge badge-green" style={{ fontSize: 9 }}>✓ SAFE</span>
+                      ? <span className="badge badge-red" style={{ fontSize: 9 }}>BREACH</span>
+                      : <span className="badge badge-green" style={{ fontSize: 9 }}>SAFE</span>
                   )}
                 </div>
                 <div className="vault-user">{entry.username || "No username"}</div>
               </div>
               <div className="vault-actions">
                 <button className="btn btn-ghost btn-sm" onClick={e => { e.stopPropagation(); decryptEntry(entry); }}>
-                  {decryptedPasswords[entry.id] ? "🙈" : "👁"}
+                  {decryptedPasswords[entry.id] ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
-                <button className="btn btn-ghost btn-sm" onClick={e => { e.stopPropagation(); startEdit(entry); }}>✏️</button>
-                <button className="btn btn-danger btn-sm" onClick={e => { e.stopPropagation(); deleteEntry(entry.id); }}>🗑</button>
+                <button className="btn btn-ghost btn-sm" onClick={e => { e.stopPropagation(); startEdit(entry); }}><Edit size={14} /></button>
+                <button className="btn btn-danger btn-sm" onClick={e => { e.stopPropagation(); deleteEntry(entry.id); }}><Trash size={14} /></button>
               </div>
             </div>
             {expanded === entry.id && (
@@ -264,9 +267,9 @@ export default function VaultModule({ user, masterPassword, toast }) {
                   </code>
                   {decryptedPasswords[entry.id] && (
                     <div className="flex gap-6">
-                      <button className="btn btn-ghost btn-sm" onClick={() => copyToClipboard(decryptedPasswords[entry.id])}>Copy</button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => copyToClipboard(decryptedPasswords[entry.id])}><Copy size={13} /> Copy</button>
                       <button className="btn btn-ghost btn-sm" onClick={() => checkBreach(entry)}>
-                        {breachResults[entry.id] === "checking" ? <span className="spin" /> : "🔍 Breach?"}
+                        {breachResults[entry.id] === "checking" ? <span className="spin" /> : <><Search size={13} /> Breach?</>}
                       </button>
                     </div>
                   )}
@@ -275,8 +278,8 @@ export default function VaultModule({ user, masterPassword, toast }) {
                   <div className="info-row">
                     <span className="info-label">Status</span>
                     {breachResults[entry.id].breached
-                      ? <span className="breach-warning">⚠ Found in {breachResults[entry.id].count.toLocaleString()} data breaches</span>
-                      : <span className="breach-safe">✓ Not found in known breaches</span>
+                      ? <span className="breach-warning"><AlertTriangle size={13} /> Found in {breachResults[entry.id].count.toLocaleString()} data breaches</span>
+                      : <span className="breach-safe"><CheckCircle size={13} /> Not found in known breaches</span>
                     }
                   </div>
                 )}
@@ -290,7 +293,9 @@ export default function VaultModule({ user, masterPassword, toast }) {
       {showAdd && (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowAdd(false)}>
           <div className="modal">
-            <div className="modal-title">{editingEntry ? "✏️ Edit Entry" : "+ New Vault Entry"}</div>
+            <div className="modal-title flex items-center gap-8">
+              {editingEntry ? <><Edit size={16} /> Edit Entry</> : <><Plus size={16} /> New Vault Entry</>}
+            </div>
 
             <div className="grid-2">
               <div className="form-group">
@@ -312,7 +317,7 @@ export default function VaultModule({ user, masterPassword, toast }) {
               <label className="label">Password *</label>
               <div className="flex gap-8">
                 <input className="input input-mono" type="text" placeholder="Enter or generate" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} style={{ flex: 1 }} />
-                <button className="btn btn-ghost btn-sm" style={{ flexShrink: 0 }} onClick={() => setForm(f => ({ ...f, password: generatePassword(genLen, genOptions) }))}>⚡ Gen</button>
+                <button className="btn btn-ghost btn-sm" style={{ flexShrink: 0 }} onClick={() => setForm(f => ({ ...f, password: generatePassword(genLen, genOptions) }))}><Zap size={14} /> Gen</button>
               </div>
               {form.password && <StrengthMeter password={form.password} />}
 
@@ -357,13 +362,13 @@ export default function VaultModule({ user, masterPassword, toast }) {
             {/* Encryption Pipeline */}
             <div className="card card-success card-sm mb-16">
               <div className="pipeline">
-                <div className="pipeline-step"><span className="pipeline-icon">📝</span> Plaintext</div>
+                <div className="pipeline-step"><FileText size={14} /> Plaintext</div>
                 <span className="pipeline-arrow">→</span>
-                <div className="pipeline-step"><span className="pipeline-icon">🔑</span> Vigenère</div>
+                <div className="pipeline-step"><Key size={14} /> Vigenère</div>
                 <span className="pipeline-arrow">→</span>
-                <div className="pipeline-step"><span className="pipeline-icon">🛡</span> AES-256</div>
+                <div className="pipeline-step"><Shield size={14} /> AES-256</div>
                 <span className="pipeline-arrow">→</span>
-                <div className="pipeline-step"><span className="pipeline-icon">💾</span> Database</div>
+                <div className="pipeline-step"><Database size={14} /> Database</div>
               </div>
             </div>
 
